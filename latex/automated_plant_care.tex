@@ -3,6 +3,35 @@
 \usepackage[left=0.5in, right=0.5in, top=0.5in]{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\colorlet{mygray}{black!30}
+\colorlet{mygreen}{green!60!blue}
+\colorlet{mymauve}{red!60!blue}
+
+\lstset{
+	basicstyle=\ttfamily,
+	columns=fullflexible,
+	breakatwhitespace=false,      
+	breaklines=true,                
+	captionpos=b,                    
+	commentstyle=\color{mygreen}, 
+	extendedchars=true,              
+	frame=single,                   
+	keepspaces=true,             
+	keywordstyle=\color{blue},      
+	language=c++,                 
+	numbers=none,                
+	numbersep=5pt,                   
+	numberstyle=\tiny\color{blue}, 
+	rulecolor=\color{mygray},        
+	showspaces=false,               
+	showtabs=false,                 
+	stepnumber=5,                  
+	stringstyle=\color{mymauve},    
+	tabsize=3      
+}
 
 \setlength\parindent{0pt}
 
@@ -21,7 +50,6 @@
 \begin{document}
 
 \maketitle
-
 
 \section{Introduction}
 The goal of this project is to implement reliable automation for plant care.  Taking care of plants that yield something of value to the caretaker or his or her employer boils down to supplying the proper levels of light, hydration, and nutrients.  Of these, the first two typically require the caretaker's attention at least once per day.  The most severe potential consequence of neglect is, of course, death of the plant, which renders the entire effort futile.
@@ -43,7 +71,7 @@ Light & Provide correct spectrum for plant & Erligpowht 45 W grow light \\ \hlin
 Photoresistor & Ensure light is operating & GM5539 \\ \hline
 Raspberry Pi & Runs at least the back-end & Raspberry Pi 3B \\ \hline
 Raspberry Pi camera & Visual of plant and maybe time-lapse & V2 \\ \hline
-Teensy 3.2 & Report analog sensor data & \href{https://www.amazon.com/gp/product/B015QUPO5Y/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1}{Amazon} 
+Arduino Uno & Report analog sensor data & \href{https://www.amazon.com/gp/product/B015QUPO5Y/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1}{Amazon} 
 \end{tabular}
 \end{table}
 
@@ -52,8 +80,6 @@ The most trivial part of how the system will operate pertains to the light, whic
 \\\\
 Next up is the pump operation.  When the hygrometer indicates dry soil, the pump will operate for a brief TBD interval.  This pump will be submerged in a reserve of water that will have a simple circuit that's nominally closed by the water itself until the reserve is nearing depletion.
 
-
-\newpage
 \subsection{Front-End Requirements}
 The front-end will provide a simple, vertically scrolling interface with metrics about delivery of light and water to the plant in the form of two time-series plots for the last 24 hours.  Vertical axes will be the light level from the photoresistor and the moisture level from the hygrometer, respectively.
 \\\\
@@ -84,10 +110,50 @@ The starting point is to establish RF capability between the Pi and the RF outle
 \end{tabular}	
 \end{table}
 
-\subsection{Photoresistor}
-A key detail is that a photoresistor is an analog device.  Solutions for the Pi tended to involve capacitors that were not immediately available, so it was decided to use a Teensy 3.2 to handle this and any other analog sensor that may arise.  This involved attempting to set up the Arduino IDE with Teensyduino on Mac OS, but due to an untraceable incompatibility, it was necessary to investigate the photoresistor on a Windows box.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rf_circuit}
+	\caption{Setup for getting RF codes.}
+	\label{fig:rf_circuit}
+\end{figure}
 
-% Moisture sensor should be analog too
+\subsection{Photoresistor}
+A key detail is that a photoresistor is an analog device.  Solutions for the Pi tended to involve capacitors that were not immediately available, so it was decided to use an Arduino Uno to handle analog inputs.  Viewable in Fig. \ref{fig:photoresistor_circuit}, the circuit for the photoresistor is a simple voltage divider, with one side wired to pin A0 and the other being a 10k $\Omega$ resistor leading to ground.  
+\\\\
+From here, using the Arduino IDE's serial monitor/plotter, it was verified that this arrangement yielded higher values with more light.  It is worth noting that shadows cast substantially affect readings, so the sensor will have to be located in a place that won't be obstructed by leaves.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{photoresistor_circuit}
+	\caption{Circuit for testing photoresistor.}
+	\label{fig:photoresistor_circuit}
+\end{figure}
+
+\subsection{Hygrometer}
+The hygrometers purchased on Ali Express came with a small chip containing a potentiometer that converts the analog signal to a binary, digital one.  The intended use is to set the potentiometer to a threshold value that would serve as a set-point for watering.  
+\\\\
+For this case, a low/high sensor isn't terribly interesting, so per Fig. \ref{fig:hygrometer_circuit}, the photoresistor was swapped with the hygrometer in a cup of dry soil.  To test the sensor, water was poured into the cup.  Fig. \ref{fig:moisture_plot} shows the serial plotter output for pouring a small bit of water followed by a sustained pour.  By this metric, it seems feasible to incorporate the hygrometer as an analog device, which enables more interesting plots versus time than the digital option.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{moisture_plot}
+	\caption{Soil moisture versus time (arbitrary units) as water was poured into the cup.}
+	\label{fig:moisture_plot}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{hygrometer_circuit}
+	\caption{Circuit for testing hygrometer.}
+	\label{fig:hygrometer_circuit}
+\end{figure}
+
+\subsection{Water Level}
+This is certainly the easiest of the sensors to describe and implement.  Similar to the others, a voltage divider will be used.  When the leads are submerged in the water, the circuit is closed with negligible resistance, so the only change to the general circuit in use is to have another 10k $\Omega$ resistor placed in series with the analog pin.  Given the trivial nature of the sensor, it was not deemed necessary to test this circuit.
+
+\subsection{Analog Sensor Summary}
+Investigating use of a photoresistor, hygrometer, and a simple water level sensor led to a few key findings.  The most significant is that an Arduino is needed to bridge the gap between analog and the Raspberry Pi.  Along with this, it was found that the same basic circuit -- a voltage divider with a 10k $\Omega$ resistor on ground -- can be employed for all three sensors.
+\\\\
+These criteria informed the writing of the sketch shown in Fig. \ref{fig:arduino_sketch}, which simply prints the state of the three pins delimited by commas.  It is thought best to keep the Arduino sketch dead simple, because there's not a lot to work with as far as libraries or computing power.  From here, the Raspberry Pi will be able to fetch sensor data as needed.
 
 \newpage
 
@@ -100,11 +166,14 @@ A key detail is that a photoresistor is an analog device.  Solutions for the Pi 
 	\label{fig:schematic}
 \end{figure}
 
+\newpage
+
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.5\textwidth]{rf_circuit}
-	\caption{Setup for getting RF codes.}
-	\label{fig:rf_circuit}
+	\lstinputlisting{../arduino/sketch.cpp}
+	\caption{Arduino sketch for reading the photoresistor, hygrometer, and water level sensor.}
+	\label{fig:arduino_sketch}
 \end{figure}
+
+
 
 \end{document}
