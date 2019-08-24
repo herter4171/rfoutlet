@@ -1,7 +1,4 @@
-all: send codesend RFSniffer
-
-send: RCSwitch.o send.o
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $+ -o $@ -lwiringPi
+all: codesend RFSniffer
 	
 codesend: RCSwitch.o codesend.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $+ -o $@ -lwiringPi
@@ -11,4 +8,4 @@ RFSniffer: RCSwitch.o RFSniffer.o
 	
 
 clean:
-	$(RM) *.o send codesend servo RFSniffer
+	$(RM) *.o codesend RFSniffer
