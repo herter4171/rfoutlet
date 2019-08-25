@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(rfoutlet)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost 1.67.0 COMPONENTS system filesystem thread REQUIRED)
 
@@ -18,6 +18,6 @@ endif()
 find_library(wiringPi_LIB wiringPi)
 add_subdirectory(src)
 
-add_executable(rfoutlet src/main.cpp src/RCSwitch.cpp src/OutletController.cpp src/SimpleSerial.cpp)
+add_executable(rfoutlet src/main.cpp src/RCSwitch.cpp src/OutletController.cpp src/SimpleSerial.cpp include/PlantExceptions.h src/PlantWatcher.cpp)
 target_include_directories(rfoutlet PRIVATE include)
-target_link_libraries(rfoutlet ${wiringPi_LIB} ${Boost_LIBRARIES})
+target_link_libraries(rfoutlet stdc++fs ${wiringPi_LIB} ${Boost_LIBRARIES})

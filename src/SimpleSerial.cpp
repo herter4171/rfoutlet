@@ -10,16 +10,46 @@ std::vector<int> SimpleSerial::parseLine()
 
     // Read past partial line, and store full line
     readLine();
-    std::string line = readLine();
-
-    std::vector<std::string> valStrings;
-    split(valStrings, line, is_any_of(","));
+    bool goodRead = false;
+    int tries = 0, maxTries = 3;
 
     std::vector<int> parsedVals;
-    for (auto & valStr : valStrings)
+
+    while (!goodRead)
     {
-        int val = std::stoi(valStr);
-        parsedVals.push_back(val);
+        tries++;
+
+        try
+        {
+            // Read line and split by commas
+            std::string line = readLine();
+            std::vector<std::string> valStrings;
+            split(valStrings, line, is_any_of(","));
+
+            // Length error if three strings not present
+            if (valStrings.size() != num_vals)
+            {
+                std::string msg = "Expect ";
+                msg += std::to_string(num_vals) + " values.";
+                throw std::length_error(msg);
+            }
+
+            // Fill int vector from strings
+            for (auto & valStr : valStrings)
+            {
+                int val = std::stoi(valStr);
+                parsedVals.push_back(val);
+            }
+
+            goodRead = true; // Valid int vec established
+        }
+        catch(std::exception& ex)
+        {
+            if (tries >= maxTries) // Can't get good read
+            {
+                throw; // Handle elsewhere
+            }
+        }
     }
 
     return parsedVals;

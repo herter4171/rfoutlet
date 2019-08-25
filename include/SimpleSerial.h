@@ -6,6 +6,7 @@
 #define RFOUTLET_SIMPLESERIAL_H
 
 #include <vector>
+#include <stdexcept>
 
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
@@ -27,10 +28,11 @@ public:
     // Ensures a complete line is returned
     std::vector<int> parseLine();
 
+private:
     // Legacy implementation for reading a single line
     std::string readLine();
 
-private:
+    // Needed for serial communication
     boost::asio::io_service io;
     boost::asio::serial_port serial;
 
