@@ -12,15 +12,12 @@ using namespace boost;
 
 int main(int argc, char* argv[])
 {
-
     try {
 
         SimpleSerial serial("/dev/ttyACM0");
 
         PlantWatcher pw;
-        pw.update_sensor_data();
-        pw.update_light();
-        std::cout << pw.update_photo();
+        pw();
 
         for(int i = 0; i < 10000; i++)
         {

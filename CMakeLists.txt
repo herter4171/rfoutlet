@@ -21,6 +21,15 @@ add_subdirectory(hiredis)
 
 add_subdirectory(src)
 
-add_executable(rfoutlet src/main.cpp src/RCSwitch.cpp src/OutletController.cpp src/SimpleSerial.cpp include/PlantExceptions.h src/PlantWatcher.cpp)
+add_executable(rfoutlet
+        src/main.cpp
+        src/RCSwitch.cpp
+        src/OutletController.cpp
+        src/SimpleSerial.cpp
+        include/PlantExceptions.h
+        src/PlantWatcher.cpp
+        src/CacheIO.cpp
+        include/BasePlantIO.h)
+
 target_include_directories(rfoutlet PRIVATE include hiredis)
 target_link_libraries(rfoutlet stdc++fs hiredis ${wiringPi_LIB} ${Boost_LIBRARIES})

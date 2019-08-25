@@ -14,15 +14,15 @@
 
 #include <boost/date_time.hpp>
 
+#include "BasePlantIO.h"
 #include "SimpleSerial.h"
 #include "OutletController.h"
 #include "PlantExceptions.h"
+#include "CacheIO.h"
 
-class PlantWatcher
+class PlantWatcher : public BasePlantIO
 {
 public:
-    // Indices for mapping Arduino feed
-    enum SENSOR_INDS{LIGHT, MOISTURE, RESERVE};
 
     // Instantiate with light assumed off
     PlantWatcher(): outlet_ctrl()
@@ -30,6 +30,8 @@ public:
         light_on = false;
         took_photo = false;
     }
+
+    void operator()();
 
     // Read data from Arduino, and store values
     void update_sensor_data();
@@ -53,13 +55,16 @@ private:
     // Makes images folder if not present
     bool ensure_image_folder();
 
-    // Store latest sensor data
-    int light_val, moist_val, reserv_val;
+    void send_plant_data();
 
-    // Setpoints for minimum values
-    const int light_min = 10,
-              moist_min = 110,
-              reserve_min = 5;
+    // Store latest sensor data
+    std::vector<int> sensorVals;
+
+    // For checking against sensor values
+    const std::vector<int> minVals = {10, 110, 5};
+
+    // For indicating equipment statuses
+    std::vector<bool> statusVec;
 
     bool light_on; // Reflects state of the light
     bool took_photo; // True after photo taken

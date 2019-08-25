@@ -5,16 +5,32 @@
 #include "PlantWatcher.h"
 #include "PlantExceptions.h"
 
+void PlantWatcher::operator()()
+{
+    statusVec = {true, true, true};
+
+    // Read sensors
+    update_sensor_data();
+
+    // Ensure lighting is good
+    try {
+        update_light();
+    }
+    catch(LowLightException llEx)
+    {
+        statusVec[LIGHT] = false;
+    }
+
+    //update_pump();
+    //update_photo();
+    send_plant_data();
+}
+
 void PlantWatcher::update_sensor_data()
 {
     // Read in sensor data
     SimpleSerial serial(arduino_addr);
-    std::vector<int> newVals = serial.parseLine();
-
-    // Assign to appropriate sensor vals
-    light_val = newVals[LIGHT];
-    moist_val = newVals[MOISTURE];
-    reserv_val = newVals[RESERVE];
+    sensorVals = serial.parseLine();
 }
 
 void PlantWatcher::update_light()
@@ -29,8 +45,8 @@ void PlantWatcher::update_light()
             outlet_ctrl.light_on();
             light_on = true;
         }
-            // Raise exception if light is "on" and too dim
-        else if (light_val < light_min)
+        // Raise exception if light is "on" and too dim
+        else if (sensorVals[LIGHT] < minVals[LIGHT])
         {
             throw LowLightException();
         }
@@ -96,7 +112,7 @@ std::string PlantWatcher::update_photo()
 
 void PlantWatcher::update_pump()
 {
-    if (moist_val < moist_min) // Need to run pump
+    if (sensorVals[MOISTURE] < minVals[MOISTURE]) // Need to run pump
     {
         outlet_ctrl.run_pump_for_time(pump_run_seconds);
         sleep(pump_wait_seconds);
@@ -141,4 +157,11 @@ bool PlantWatcher::ensure_image_folder()
     }
 
     return dirExist;
+}
+
+void PlantWatcher::send_plant_data()
+{
+    CacheIO cacheIo;
+    cacheIo.set_values(sensorVals);
+    cacheIo.set_statuses(statusVec);
 }
