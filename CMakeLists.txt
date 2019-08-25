@@ -16,8 +16,11 @@ if(Boost_FOUND)
 endif()
 
 find_library(wiringPi_LIB wiringPi)
+
+add_subdirectory(hiredis)
+
 add_subdirectory(src)
 
 add_executable(rfoutlet src/main.cpp src/RCSwitch.cpp src/OutletController.cpp src/SimpleSerial.cpp include/PlantExceptions.h src/PlantWatcher.cpp)
-target_include_directories(rfoutlet PRIVATE include)
-target_link_libraries(rfoutlet stdc++fs ${wiringPi_LIB} ${Boost_LIBRARIES})
+target_include_directories(rfoutlet PRIVATE include hiredis)
+target_link_libraries(rfoutlet stdc++fs hiredis ${wiringPi_LIB} ${Boost_LIBRARIES})
