@@ -215,6 +215,7 @@ Given what's known so far, it seems safe to say that this is an \href{https://ww
 \begin{table}[h]
 	\centering
 	\caption{Summary table of event logic.}
+	\label{tab:event_response}
 	\begin{tabular}{l|r}
 		\textbf{Event} & \textbf{Response} \\ \hline
 		Light not detected when ``on" & Light status to error \\ \hline
@@ -254,7 +255,15 @@ This type is a wrapper of what's needed to read serial input asynchronously.  Th
 \paragraph{OutletController}
 Methods contained in this type provide an interface to turn the light on or off as well as cycling the pump for a specific number of seconds.  The syntax for actually transmitting a code is wrapped up in \verb|send_code|.
 
+\paragraph{PlantWatcher}
+Per its name, this type is responsible for monitoring and orchestrating the respective events and responses detailed in Table \ref{tab:event_response} by interfacing with \verb|SimpleSerial| via \verb|update_sensor_data()| and by having a pet instance of 
+\\
+\verb|OutletController| to operate on.  Last of all, the method \verb|update_photo()| ensures that a still image is captured and stored a the appropriate time.
+
 % Requires knowledge of systems admin, devops, c++ including cmake, python, circuits.  Had to start with existing code and add functionality
+
+\newpage
+\section{Front-End Implementation}
 
 
 \newpage
