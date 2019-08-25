@@ -1,6 +1,6 @@
 /*
   RCSwitch - Arduino libary for remote control outlet switches
-  Copyright (c) 2011 Suat Özgür.  All right reserved.
+  Copyright (c) 2011 Suat ï¿½zgï¿½r.  All right reserved.
 
   Contributors:
   - Andre Koehler / info(at)tomate-online(dot)de
@@ -64,6 +64,7 @@ class RCSwitch {
     void switchOff(char sFamily, int nGroup, int nDevice);
 
     void sendTriState(char* Code);
+
     void send(unsigned long Code, unsigned int length);
     void send(char* Code);
     
