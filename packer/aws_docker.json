@@ -1,0 +1,27 @@
+{
+  "builders": [{
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-west-1",    
+      "source_ami": "ami-056ee704806822732",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "amazon-docker {{timestamp}}"
+    }
+  ],
+
+  "provisioners": [{
+      "type": "file",
+      "source": "./install_docker.sh",
+      "destination": "/home/ec2-user/install_docker.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "chmod +x *.sh",
+        "sudo ./install_docker.sh"
+      ]
+    }
+  ]
+}
