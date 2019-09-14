@@ -5,11 +5,17 @@
 #ifndef RFOUTLET_OUTLETCONTROLLER_H
 #define RFOUTLET_OUTLETCONTROLLER_H
 
+#include <unistd.h>
+#include <initializer_list>
+#include "RCSwitch.h"
 
 class OutletController
 {
 
 public:
+
+    OutletController();
+
     // Light switching
     void light_on();
     void light_off();

@@ -34,7 +34,7 @@ private:
 
     std::string get_status_string(bool status);
 
-    const std::string ip = "54.176.149.126";
+    const std::string ip = "192.168.1.118";//"54.176.149.126";
     const int port = 6379;
 
     std::unique_ptr<redisContext> ctx;

@@ -7,23 +7,32 @@
 
 void PlantWatcher::operator()()
 {
-    statusVec = {true, true, true};
-
-    // Read sensors
-    update_sensor_data();
-
-    // Ensure lighting is good
-    try {
-        update_light();
-    }
-    catch(LowLightException llEx)
+    try
     {
-        statusVec[LIGHT] = false;
-    }
+        while(*keep_alive)
+        {
+            statusVec = {true, true, true};
 
-    //update_pump();
-    //update_photo();
-    send_plant_data();
+            // Read sensors
+            update_sensor_data();
+
+            // Ensure lighting is good
+            try {
+                update_light();
+            }
+            catch(LowLightException llEx)
+            {
+                statusVec[LIGHT] = false;
+            }
+
+            //update_pump();
+            //update_photo();
+            send_plant_data();
+            sleep(delay_seconds);
+        }
+    }
+    catch(boost::thread_interrupted&){}
+
 }
 
 void PlantWatcher::update_sensor_data()
@@ -164,4 +173,19 @@ void PlantWatcher::send_plant_data()
     CacheIO cacheIo;
     cacheIo.set_values(sensorVals);
     cacheIo.set_statuses(statusVec);
+
+    if (verbose_output)
+    {
+        print_sensor_data();
+    }
+}
+
+void PlantWatcher::print_sensor_data()
+{
+    for (auto &val : sensorVals)
+    {
+        std::cout << val << " ";
+    }
+
+    std::cout << std::endl;
 }

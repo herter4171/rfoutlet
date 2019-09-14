@@ -1,10 +1,18 @@
 //
 // Created by Justin Herter on 8/24/19.
 //
-#include <unistd.h>
 
-#include "RCSwitch.h"
 #include "OutletController.h"
+
+OutletController::OutletController()
+{
+    // Turn off all outlets for safety/sanity reasons
+    bool want_on = false;
+    for (auto &curr_code : {light_code_on, pump_code_on})
+    {
+        send_code(curr_code, want_on);
+    }
+}
 
 void OutletController::light_on()
 {

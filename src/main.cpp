@@ -1,36 +1,35 @@
 #include <iostream>
 #include <vector>
-#include <stdio.h>
-#include <stdlib.h>
+#include <memory>
 
-#include "SimpleSerial.h"
-#include "OutletController.h"
 #include "PlantWatcher.h"
-
-using namespace std;
-using namespace boost;
+#include <boost/thread.hpp>
 
 int main(int argc, char* argv[])
 {
-    try {
+    // Execution threads to keep track of
+    std::vector<boost::thread> thread_vec;
 
-        SimpleSerial serial("/dev/ttyACM0");
+    // Kill switch
+    std::shared_ptr<std::atomic_bool> keep_alive(new std::atomic_bool(true));
 
-        PlantWatcher pw;
-        pw();
 
-        for(int i = 0; i < 10000; i++)
-        {
-            for (auto &val : serial.parseLine())
-            {
-                std::cout << val << " ";
-            }
+    // Add plant watcher to threads
+    PlantWatcher pw(true);
+    pw.set_keep_alive(keep_alive);
+    thread_vec.push_back(boost::thread(pw));
 
-            std::cout << "\n";
-        }
-    } catch(boost::system::system_error& e)
+    // Wait for a while
+    sleep(60);
+
+    // Send stop signal
+    *keep_alive = false;
+
+    // Interrupt and join all threads before termination
+    for (auto &curr_thread : thread_vec)
     {
-        cout<<"Error: "<<e.what()<<endl;
-        return 1;
+        curr_thread.join();
     }
+
+    return 0;
 }

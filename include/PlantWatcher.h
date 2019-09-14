@@ -5,14 +5,18 @@
 #ifndef RFOUTLET_PLANTWATCHER_H
 #define RFOUTLET_PLANTWATCHER_H
 
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <unistd.h>
 #include <stdlib.h>
 #include <filesystem>
+#include <atomic>
+#include <memory>
 
 #include <boost/date_time.hpp>
+#include <boost/thread.hpp>
 
 #include "BasePlantIO.h"
 #include "SimpleSerial.h"
@@ -25,10 +29,12 @@ class PlantWatcher : public BasePlantIO
 public:
 
     // Instantiate with light assumed off
-    PlantWatcher(): outlet_ctrl()
+    PlantWatcher(bool verbose = false): outlet_ctrl()
     {
         light_on = false;
         took_photo = false;
+        verbose_output = verbose;
+        //keep_alive = true;
     }
 
     void operator()();
@@ -46,6 +52,11 @@ public:
     // Takes plant picture
     std::string update_photo();
 
+    void set_keep_alive(std::shared_ptr<std::atomic_bool> kp_alive)
+    {
+        keep_alive = kp_alive;
+    }
+
 private:
     // Convenience wrapper for boost::posix_time
     int get_current_hour();
@@ -57,6 +68,8 @@ private:
 
     void send_plant_data();
 
+    void print_sensor_data();
+
     // Store latest sensor data
     std::vector<int> sensorVals;
 
@@ -65,6 +78,9 @@ private:
 
     // For indicating equipment statuses
     std::vector<bool> statusVec;
+
+    // For main() to terminate loop
+    std::shared_ptr<std::atomic_bool> keep_alive;
 
     bool light_on; // Reflects state of the light
     bool took_photo; // True after photo taken
@@ -77,6 +93,8 @@ private:
     const int pump_run_seconds = 5,
               pump_wait_seconds = 10;
 
+    const int delay_seconds = 5;
+
     // Address Arduino always shows up at
     const std::string arduino_addr = "/dev/ttyACM0";
 
@@ -86,6 +104,8 @@ private:
                       camera_cmd_ext = ".jpg";
 
     OutletController outlet_ctrl;
+
+    bool verbose_output;
 };
 
 #endif //RFOUTLET_PLANTWATCHER_H
