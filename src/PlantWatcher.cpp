@@ -3,28 +3,43 @@
 //
 
 #include "PlantWatcher.h"
-#include "PlantExceptions.h"
 
+// Clion added this to disable warning for unterminated loop
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wmissing-noreturn"
+
+// Watch the plant until thread interrupts
 void PlantWatcher::operator()()
 {
-    statusVec = {true, true, true};
-
-    // Read sensors
-    update_sensor_data();
-
-    // Ensure lighting is good
-    try {
-        update_light();
-    }
-    catch(LowLightException llEx)
+    try
     {
-        statusVec[LIGHT] = false;
-    }
+        for (;;)
+        {
+            statusVec = {true, true, true};
 
-    //update_pump();
-    //update_photo();
-    send_plant_data();
+            // Read sensors
+            update_sensor_data();
+
+            // Ensure lighting is good
+            try {
+                update_light();
+            }
+            catch (LowLightException llEx) {
+                statusVec[LIGHT] = false;
+            }
+
+            //update_pump();
+            //update_photo();
+            send_plant_data();
+            sleep(update_interval_sec);
+        }
+    }
+    catch (boost::thread_interrupted&) {}
+
 }
+
+// Clion added this to disable warning for unterminated loop
+//#pragma clang diagnostic pop
 
 void PlantWatcher::update_sensor_data()
 {

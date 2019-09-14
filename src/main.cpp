@@ -2,8 +2,10 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-#include "SimpleSerial.h"
+#include <boost/thread.hpp>
+
 #include "OutletController.h"
 #include "PlantWatcher.h"
 
@@ -12,25 +14,22 @@ using namespace boost;
 
 int main(int argc, char* argv[])
 {
-    try {
+    // Execution threads to keep track of
+    std::vector<boost::thread> thread_vec;
 
-        SimpleSerial serial("/dev/ttyACM0");
+    // Add plant watcher to threads
+    PlantWatcher pw;
+    thread_vec.push_back(boost::thread(pw));
 
-        PlantWatcher pw;
-        pw();
+    // Wait for a while
+    sleep(60);
 
-        for(int i = 0; i < 10000; i++)
-        {
-            for (auto &val : serial.parseLine())
-            {
-                std::cout << val << " ";
-            }
-
-            std::cout << "\n";
-        }
-    } catch(boost::system::system_error& e)
+    // Interrupt and join all threads before termination
+    for (auto &curr_thread : thread_vec)
     {
-        cout<<"Error: "<<e.what()<<endl;
-        return 1;
+        curr_thread.interrupt();
+        curr_thread.join();
     }
+
+    return 0;
 }

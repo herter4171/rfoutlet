@@ -13,10 +13,12 @@
 #include <filesystem>
 
 #include <boost/date_time.hpp>
+#include <boost/thread.hpp>
 
 #include "BasePlantIO.h"
 #include "SimpleSerial.h"
 #include "OutletController.h"
+
 #include "PlantExceptions.h"
 #include "CacheIO.h"
 
@@ -76,6 +78,8 @@ private:
     // Want to run the pump 5 seconds and wait ten to recheck
     const int pump_run_seconds = 5,
               pump_wait_seconds = 10;
+
+    const int update_interval_sec = 5;
 
     // Address Arduino always shows up at
     const std::string arduino_addr = "/dev/ttyACM0";
