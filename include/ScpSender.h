@@ -14,23 +14,14 @@
 using namespace std;
 namespace ba = boost::algorithm;
 
-int send_scp(string from_path, string host, string to_path)
-{
-    // Build SCP command
-    vector<string> remote_args = {host, to_path};
-    vector<string> scp_args = {"scp", from_path, ba::join(remote_args, ":")};
-    string scp_cmd = ba::join(scp_args, " ");
+namespace scp {
 
-    // Return exit code of command
-    return system(scp_cmd.c_str());
-}
+    // Runs "scp from_path host:to_path"
+    int send_to_remote(string from_path, string host, string to_path);
 
-bool wrapper_test_scp(string from_path)
-{
-    string host = "mac_mini";
-    string to
+    // Convenience wrapper for testing
+    bool wrapper_send_to_remote(string from_path);
 
 }
-
 
 #endif //RFOUTLET_SCPSENDER_H
