@@ -4,7 +4,7 @@
 
 #include "PhotoHandler.h"
 
-std::string PhotoHandler::update_photo()
+std::string PhotoHandler::update_photo(bool &took_photo)
 {
     std::stringstream msg; // For return string
 

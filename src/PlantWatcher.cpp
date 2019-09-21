@@ -87,7 +87,7 @@ std::string PlantWatcher::update_photo()
     if (curr_hour >= photo_hour && !took_photo && light_on)
     {
         PhotoHandler ph;
-        std::cout << ph.update_photo();
+        std::cout << ph.update_photo(took_photo);
     }
 
     return msg.str();

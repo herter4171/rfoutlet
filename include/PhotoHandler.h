@@ -18,12 +18,7 @@ class PhotoHandler
 
 public:
 
-    PhotoHandler()
-    {
-        took_photo = false;
-    }
-
-    std::string update_photo();
+    std::string update_photo(bool &took_photo);
 
 private:
     // Returns e.g. 2019-Sep-21
@@ -31,8 +26,6 @@ private:
 
     // Runs "mkdir -p" for image directory
     bool ensure_image_folder();
-
-    bool took_photo; // True after photo taken
 
     const std::string camera_cmd_pfx = "raspistill -w 1024 -h 768 -o ",
             camera_cmd_dir = "/home/pi/images",
