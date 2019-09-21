@@ -23,6 +23,7 @@
 #include "OutletController.h"
 #include "PlantExceptions.h"
 #include "CacheIO.h"
+#include "PhotoHandler.h"
 
 class PlantWatcher : public BasePlantIO
 {
@@ -60,11 +61,6 @@ public:
 private:
     // Convenience wrapper for boost::posix_time
     int get_current_hour();
-
-    std::string get_date_timestamp();
-
-    // Makes images folder if not present
-    bool ensure_image_folder();
 
     void send_plant_data();
 

@@ -13,7 +13,6 @@ int main(int argc, char* argv[])
     // Kill switch
     std::shared_ptr<std::atomic_bool> keep_alive(new std::atomic_bool(true));
 
-
     // Add plant watcher to threads
     PlantWatcher pw(true);
     pw.set_keep_alive(keep_alive);

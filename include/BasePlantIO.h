@@ -28,6 +28,9 @@ protected:
                                 "Moist_Status",
                                 "Resrv_Status"};
 
+    // For latest write timestamp
+    const std::string writeTimeKey = "Last_Write";
+
     // Want human readable statuses
     const std::string statusGood = "Good",
                       statusError = "ERROR";

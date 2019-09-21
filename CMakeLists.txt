@@ -29,7 +29,7 @@ add_executable(rfoutlet
         include/PlantExceptions.h
         src/PlantWatcher.cpp
         src/CacheIO.cpp
-        include/BasePlantIO.h)
+        include/BasePlantIO.h include/ScpSender.h include/PhotoHandler.h)
 
 target_include_directories(rfoutlet PRIVATE include hiredis)
 target_link_libraries(rfoutlet stdc++fs hiredis ${wiringPi_LIB} ${Boost_LIBRARIES})

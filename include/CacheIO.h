@@ -9,6 +9,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <initializer_list>
 
 #include "hiredis.h"
 #include "BasePlantIO.h"
@@ -27,6 +29,7 @@ public:
 
     void set_statuses(std::vector<bool> statusVec);
 
+    void update_last_write();
 
 private:
 

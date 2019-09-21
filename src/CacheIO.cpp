@@ -34,6 +34,15 @@ void CacheIO::set_statuses(std::vector<bool> statusVec)
     write_map(statusMap);
 }
 
+void CacheIO::update_last_write()
+{
+    using namespace std::chrono;
+    seconds sec_val = duration_cast<seconds>(system_clock::now().time_since_epoch());
+    std::string sec_str = std::to_string(sec_val.count());
+
+    write_map({{writeTimeKey, sec_str}});
+}
+
 std::string CacheIO::get_status_string(bool status)
 {
     return status ? statusGood : statusError;
