@@ -4,16 +4,6 @@
 
 #include "OutletController.h"
 
-OutletController::OutletController()
-{
-    // Turn off all outlets for safety/sanity reasons
-    bool want_on = false;
-    for (auto &curr_code : {light_code_on, pump_code_on})
-    {
-        send_code(curr_code, want_on);
-    }
-}
-
 void OutletController::light_on()
 {
     send_code(light_code_on, true);
@@ -40,6 +30,16 @@ void OutletController::run_pump_for_time(int seconds)
     send_code(pump_code_on, true);
     sleep(seconds);
     send_code(pump_code_on, false);
+}
+
+// Turn off all outlets for safety/sanity reasons
+void OutletController::all_off()
+{
+    bool want_on = false;
+    for (auto &curr_code : {light_code_on, pump_code_on})
+    {
+        send_code(curr_code, want_on);
+    }
 }
 
 void OutletController::send_code(unsigned int code, bool want_on)

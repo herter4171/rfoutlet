@@ -36,6 +36,8 @@ public:
         took_photo = false;
         verbose_output = verbose;
         //keep_alive = true;
+
+        outlet_ctrl.all_off(); // Turn all lights off for safety/sanity
     }
 
     void operator()();

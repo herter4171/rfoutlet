@@ -14,8 +14,6 @@ class OutletController
 
 public:
 
-    OutletController();
-
     // Light switching
     void light_on();
     void light_off();
@@ -26,9 +24,13 @@ public:
     // Turns light on and off a bit
     void flicker_test(int cycles);
 
+    void all_off();
+
 private:
     // Convenience wrapper for light switching
     void send_code(unsigned int code, bool want_on);
+
+
 
     // On codes for channel 1 (light)
     // and channel 2 (pump)
