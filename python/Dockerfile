@@ -1,3 +1,3 @@
 FROM python:rc
 
-RUN pip install flask flask_table redis
+RUN pip install flask flask_table redis Flask-Images

@@ -1,5 +1,6 @@
 from flask import Flask
 from data_table import get_table
+from photo_parse import photo_parse
 
 app = Flask(__name__)
 
@@ -12,6 +13,15 @@ def index():
 
     # Show latest plant photo
     html_str += "<h2>Latest Photo</h2>"
+
+    pp = photo_parse()
+    img_path = pp.get_latest_path()
+    print(img_path)
+
+    # Add image tag to HTML
+    html_str += "<img src=\"/{}\" width=\"500\"/>".format(img_path)
+    import os
+    print(os.getcwd())
 
     return html_str
 
