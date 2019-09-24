@@ -1,6 +1,7 @@
 from flask_table import Table, Col
 import redis
-import datetime
+from datetime import datetime
+from pytz import timezone
 
 class data_table(Table):
     l_align = {'align': 'left'}
@@ -42,14 +43,16 @@ def get_table():
     time_stamp = "<b>Note:</b> Updated at "
     time_stamp += get_last_write(r)
     time_stamp = time_stamp[:time_stamp.rfind(':')]
-    time_stamp += " UTC" + "<br>"*2
+    time_stamp += " PST" + "<br>"*2
 
     return time_stamp + table.__html__()
 
 def get_last_write(redis_conn):
     assert(isinstance(redis_conn, redis.Redis))
     epoch_time = int(redis_conn.get('Last_Write'))
+    utc_time = datetime.fromtimestamp(epoch_time, tz=timezone('UTC'))
+    local_time = utc_time.astimezone(tz=timezone('US/Pacific'))
 
-    return str(datetime.datetime.fromtimestamp(epoch_time))
+    return str(local_time)
 
 
