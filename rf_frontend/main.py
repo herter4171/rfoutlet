@@ -20,13 +20,8 @@ def index():
         html_str += "<h2>Latest Photo</h2>"
 
         pp = photo_parse()
-        img_path = pp.get_latest_path()
-        print(img_path)
+        html_str += pp.get_image_html()
 
-        # Add image tag to HTML
-        html_str += "<img src=\"/{}\" width=\"500\"/>".format(img_path)
-        import os
-        print(os.getcwd())
     except:
         html_str += "Image not present.  Has one been uploaded?"
 
