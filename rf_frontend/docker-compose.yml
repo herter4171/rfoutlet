@@ -10,12 +10,14 @@ services:
     build: .
     ports:
       - "5000:5000"
-    command: ["tail", "-f", "/dev/null"]
+    command: ["python", "-u", "/opt/project/main.py"]
     links:
       - redis
     depends_on:
       - redis
+    working_dir: "/opt/project"
     volumes:
       - ~/images:/opt/project/static
+      - .:/opt/project:rw
 volumes:
   redis_data:
