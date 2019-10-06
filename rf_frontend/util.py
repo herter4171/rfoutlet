@@ -7,5 +7,5 @@ def utc_epoch_to_timestamp(epoch_time, local_zone='US/Pacific'):
     local_time = str(utc_time.astimezone(tz=timezone(local_zone)))
 
     # Remove the seconds trailing, and append time zone PST
-    local_time = local_time[:local_time.rfind(':')]
+    local_time = local_time[:local_time.rfind('-')]
     return ' '.join([local_time, local_zone])
