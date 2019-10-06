@@ -3,7 +3,7 @@ provider "aws" {
   region     = "us-west-1"
 }
 
-resource "aws_instance" "front-end-server" {
+resource "aws_instance" "front_end_server" {
   
   // Use the AMI from Packer
   ami           = "ami-0d3ea0b56fa289e40"
@@ -12,8 +12,18 @@ resource "aws_instance" "front-end-server" {
   instance_type = "t2.micro"
   
   // Want ingress from SSH, Redis and egress to open net
-  vpc_security_group_ids = ["${aws_security_group.plant-sg.id}"]
+  vpc_security_group_ids = ["${aws_security_group.plant_sg.id}"]
   key_name = "plant_fe"
+
+  connection {
+    host = coalesce(self.public_ip, self.private_ip)
+    user = "ec2-user"
+    private_key = file("${path.module}/../plant_fe")
+  }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/launch_fe.sh"
+  }
 
   // Name for display in console
   tags = {
@@ -21,8 +31,8 @@ resource "aws_instance" "front-end-server" {
   }
 }
 
-// Want a known, static IP for the remote
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = "${aws_instance.front-end-server.id}"
-  allocation_id = var.eip-id
+// Want a fixed address if instance has to be reprovisioned
+resource "aws_eip" "front_end_eip" {
+  instance = "${aws_instance.front_end_server.id}"
+  vpc = true
 }
